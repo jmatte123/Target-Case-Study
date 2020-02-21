@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const express = require('express');
 var cors = require('cors');
 const logger = require('morgan');
+const Price = require('./price');
+const fetch = require("node-fetch");
+const lodash = require("lodash");
 
 const API_PORT = 9000;
 
@@ -12,7 +15,7 @@ app.use(logger('dev'));
 const router = express.Router();
 
 // this is our MongoDB database
-const dbRoute = 'mongodb://127.0.0.1:27017/UserAuth';
+const dbRoute = 'mongodb://127.0.0.1:27017/products';
 
 // connects our back end code with the database
 mongoose.connect(dbRoute, { 
@@ -28,18 +31,42 @@ db.once('open', () => console.log('connected to the database'));
 
 // this is our get method
 // this method fetches all available data in our database
-router.get('/getUsers', async (req, res) => {
-  var peopleJSON = await User.find({});
-  if (peopleJSON === null) return res.json({ 
-    success: false, 
-    user: user.length,
-    error: err 
-  });
-  return res.json({ 
-    success: true, 
-    amount: peopleJSON.length,
-    users: peopleJSON 
-  });
+router.get('/products/:id', async (req, res) => {
+    // get the product name from the other api
+    var nameJson = await fetch("http://redsky.target.com/v2/pdp/tcin/" + req.params.id + "?excludes=taxonomy,price,promotion,bulk_ship,rating_and_review_reviews,rating_and_review_statistics,question_answer_statistics")
+        .then((res) => {
+            return res.json()
+        }).catch((err) => {
+            res.json({
+                error: err
+            })
+        });
+
+    if (lodash.isEqual(nameJson.product.item, {})) {
+        return res.json(nameJson);
+    } 
+
+    // get the price from a local noSQL database (MongoDB)
+    var priceJson = await Price.findOne({ id: req.params.id });
+
+    // print the data that we have but if there is no price, exclude it
+    if (priceJson === null) {
+        return res.json({
+            id: req.params.id,
+            name: nameJson.product.product_description.title,
+            current_price: "Could not find price"
+        });
+    }
+
+    // combine and return the json data
+    return res.json({ 
+        id: req.params.id,
+        name: nameJson.product.item.product_description.title,
+        current_price: {
+            value: priceJson.value,
+            currency_code: priceJson.currency_code
+        }
+    });
 });
 
 // this is our update method
@@ -67,7 +94,7 @@ router.post('/updateData', (req, res) => {
 });
 
 // append /api for our http requests
-app.use('/api', router);
+app.use('/', router);
 
 // launch our backend into a port
 app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));

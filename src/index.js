@@ -17,7 +17,7 @@ app.use(bodyParser.text({type: '*/*'}));
 const router = express.Router();
 
 // this is our MongoDB database
-const dbRoute = 'mongodb://127.0.0.1:27017/products';
+const dbRoute = 'mongodb://localhost:27017/products';
 
 // connects our back end code with the database
 mongoose.connect(dbRoute, { 
@@ -91,18 +91,27 @@ router.get('/products/:id', async (req, res) => {
 // this is our update method
 // this method overwrites existing data in our database
 router.put('/products/:id', async (req, res) => {
+  // find the price in the database
   await Price.findOne({ id: req.params.id }, (err, price) => {
     if (err) return res.json({ 
       success: false, 
       error: err 
     });
+    // get the values of the request body
     const { value, currency_code } = JSON.parse(req.body);
+
+    // change them if they are there
     if (value !== undefined) price.value = value;
     if (currency_code !== undefined) price.currency_code = currency_code;
+
+    // save them back to the database
     price.save();
+
+    // return the new price and the currency code (or whatever is in the database)
     return res.json({ 
       success: true,
-      updatedUser: price
+      updated_price: price.value,
+      updated_currency_code: price.currency_code
     });
   });
 });

@@ -8,8 +8,6 @@ const fetch = require("node-fetch");
 const lodash = require("lodash");
 const bodyParser = require("body-parser");
 
-const API_PORT = 9000;
-
 const app = express();
 app.use(cors());
 app.use(logger('dev'));
@@ -17,7 +15,7 @@ app.use(bodyParser.text({type: '*/*'}));
 const router = express.Router();
 
 // this is our MongoDB database
-const dbRoute = 'mongodb://localhost:27017/products';
+const dbRoute = 'mongodb://mongo:27017/products';
 
 // connects our back end code with the database
 mongoose.connect(dbRoute, { 
@@ -120,4 +118,4 @@ router.put('/products/:id', async (req, res) => {
 app.use('/', router);
 
 // launch our backend into a port
-app.listen(API_PORT, () => console.log(`LISTENING ON PORT ${API_PORT}`));
+app.listen(4000, () => console.log(`LISTENING ON PORT 4000`));

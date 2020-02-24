@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 
 // this tests a get request with an actual product prvided by the api
 test("GET request with an actual product (return name, value and currency_code)", async () => {
-    const res = await fetch("http://localhost:9000/products/13860428")
+    const res = await fetch("http://localhost:4000/products/13860428")
     .then((res) => {
         return res.json();
     }).catch((err) => {
@@ -14,7 +14,7 @@ test("GET request with an actual product (return name, value and currency_code)"
         "id": "13860428",
         "name": "The Big Lebowski (Blu-ray)",
         "current_price": {
-            "value": 13.49,
+            "value": 12.49,
             "currency_code": "USD"
         }
     });
@@ -22,7 +22,7 @@ test("GET request with an actual product (return name, value and currency_code)"
 
 // this tests a get request where there is no product information provided by the api
 test("GET request with no product (return name, value and currency_code)", async () => {
-    const res = await fetch("http://localhost:9000/products/16696652")
+    const res = await fetch("http://localhost:4000/products/16696652")
     .then((res) => {
         return res.json();
     }).catch((err) => {
@@ -38,7 +38,7 @@ test("GET request with no product (return name, value and currency_code)", async
 
 // this tests a put request based on the product of the first test
 test("PUT request with a product (return updated_value and updated_currency_code)", async () => {
-    var res = await fetch("http://localhost:9000/products/13860428", {
+    var res = await fetch("http://localhost:4000/products/13860428", {
         method: 'PUT',
         headers: {
         'Accept': 'application/json',
@@ -58,13 +58,13 @@ test("PUT request with a product (return updated_value and updated_currency_code
     });
 
     // change it back
-    res = await fetch("http://localhost:9000/products/13860428", {
+    res = await fetch("http://localhost:4000/products/13860428", {
         method: 'PUT',
         headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ value: 13.49 })
+        body: JSON.stringify({ value: 12.49 })
     }).then((res) => {
         return res.json();
     }).catch((err) => {

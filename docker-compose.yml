@@ -4,14 +4,14 @@ volumes:
 services:
   server:
     restart: unless-stopped
-    image: server:latest
+    image: myretail:latest
     environment:
       MONGO_HOST: localhost
-      DB_NAME: company
+      DB_NAME: products
     ports:
       - 4000:4000
     volumes:
-      - ./server:/user/src/app
+      - ./myretail:/user/src/app
     links:
       - mongo
     command: npm start

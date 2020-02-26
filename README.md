@@ -16,7 +16,7 @@ Next, install docker via brew (if not already installed) and make sure that it i
 brew cask install docker
 ```
 
-Execute the following commands to build the server-side docker images and run the images.
+cd into the project directory and execute the following commands to build the server-side docker images and run the images.
 
 ```bash
 docker build -t myretail . 
